@@ -46,13 +46,13 @@ extensions = [
 ]
 
 extlinks = {
-  'edge_git':     ( 'https://github.com/3343/edge/%s',         None ),
-  'edge_usr_git': ( 'https://github.com/3343/edge_usr/%s',     None ),
-  'edge_usr_pub': ( 'http://usr.dial3343.org/%s',              None ),
-  'edge_dev_git': ( 'https://github.com/3343/edge_dev/%s',     None ),
-  'edge_dev_pub': ( 'http://dev.dial3343.org/%s',              None ),
-  'edge_opt':     ( 'https://bitbucket.com/3343/edge_opt/%s',  None ), 
-  'dial3343':     ( 'http://dial3343.org/%s',                  None )
+  'edge_git':     ( 'https://github.com/3343/edge/%s',                       None ),
+  'edge_usr_git': ( 'https://github.com/3343/edge_usr/%s',                   None ),
+  'edge_usr_pub': ( 'http://usr.dial3343.org/%s',                            None ),
+  'edge_dev_git': ( 'https://github.com/3343/edge_dev/%s',                   None ),
+  'edge_dev_pub': ( 'http://dev.dial3343.org/%s',                            None ),
+  'edge_opt':     ( 'https://opt.dial3343.org/3343/edge_opt/tree/master/%s', None ),
+  'dial3343':     ( 'http://dial3343.org/%s',                                None )
 }
 
 # Add any paths that contain templates here, relative to this directory.
