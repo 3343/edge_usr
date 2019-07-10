@@ -6,6 +6,8 @@ Currently, these are the following benchmarks:
 +---------------+------------------------------------------------------------------------------------------------------+
 | Name          | Description                                                                                          |
 +===============+======================================================================================================+
+| conv          | 2D/3D convergence benchmarks, elastic, initial plane wave solution, periodic boundary conditions.    |
++---------------+------------------------------------------------------------------------------------------------------+
 | garvin        | Solves Garvin's problem (2D), acoustic/elastic, explosive point source.                              |
 +---------------+------------------------------------------------------------------------------------------------------+
 | ghill_2d      | 2D Gaussian hill topography, acoustic/elastic, explosive point source.                               |
