@@ -10,7 +10,7 @@ If you get stuck with this user guide, you might be able to find additional inst
 
 * :edge_git:`Travis CI <blob/master/.travis.yml>`
 * :edge_git:`GoCD <blob/master/tools/gocd/cruise-config.tmpl>`
-* :edge_git:`Singularity <blob/master/tools/singularity/debian.def>`
+* :edge_git:`Singularity <blob/master/tools/build/singularity/edge.def>`
 
 General Remarks
 ---------------
@@ -248,6 +248,6 @@ If you have root-access to a system with Singularity and `debootstrap <https://w
 
    .. code-block:: bash
 
-     sudo singularity build /tmp/edge.simg ./debian.def
+     sudo singularity build /tmp/edge.simg ./edge.def
 
 3. The bootstrap might run for several hours, maybe grab a coffee.
