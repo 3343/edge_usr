@@ -28,6 +28,10 @@ Currently, these are the following benchmarks:
 +---------------+------------------------------------------------------------------------------------------------------+
 | ssef0         | Layered velocity model, elastic, kinematic rupture with variable parameters.                         |
 +---------------+------------------------------------------------------------------------------------------------------+
+| ghill         | 2D Gaussian hill topography, elastic, double couple source.                                          |
++---------------+------------------------------------------------------------------------------------------------------+
+| sgt           | 3D mountain topography, homogeneous, elastic, point forces for reciprocal solution                   |
++---------------+------------------------------------------------------------------------------------------------------+
 
 Input: Kinematic Sources
 ------------------------
