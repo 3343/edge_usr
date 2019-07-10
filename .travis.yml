@@ -8,11 +8,13 @@ notifications:
       - https://webhooks.gitter.im/e/43c875b57e67fd07bc8b
 
 install:
+  # install tools
   - pip install sphinx
   - pip install recommonmark
   - pip install sphinx_rtd_theme
   - gem install html-proofer
 
 script:
+  - curl -Vv
   - sphinx-build docs build
   - htmlproofer --url-ignore="#" --file-ignore build/search.html build
