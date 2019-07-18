@@ -129,7 +129,7 @@ We use the `AWS Command Line Interface <https://docs.aws.amazon.com/cli>`_ to la
 In the following, all commands will query the AWS Oregon region with the name ``us-west-2``.
 If you are planning on switching to a `different region <https://docs.aws.amazon.com/general/latest/gr/rande.html>`_, this has to be replaced accordingly, e.g., by ``us-east-2`` for the Ohio region.
 
-1. Find an appropriate Amazon Machine Image (`AMI <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html>`_), e.g., `CentOS <https://aws.amazon.com/mp/centos/>`_, `Amazon Linux 2 <https://aws.amazon.com/amazon-linux-2/>`_ or `Amazon Linux AMI <https://aws.amazon.com/amazon-linux-ami/>`_.
+1. Find an appropriate Amazon Machine Image (`AMI <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html>`_), e.g., `CentOS <https://aws.amazon.com/mp/centos/>`_ (recommended), `Amazon Linux 2 <https://aws.amazon.com/amazon-linux-2/>`_ or `Amazon Linux AMI <https://aws.amazon.com/amazon-linux-ami/>`_.
    In the region ``us-west-2``, the following command returns a recent image for Amazon Linux 2:
 
    .. code-block:: bash

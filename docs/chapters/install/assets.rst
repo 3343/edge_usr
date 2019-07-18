@@ -8,7 +8,7 @@ Futher background information and documentation on Git LFS is available from htt
 
 Obtaining Data
 --------------
-* Be aware that the entire repository contains LFS pointers to data in the size of ~100GB.
+* Be aware that the entire repository contains LFS pointers to data in the size of >100GB.
   If you are not planning on storing all of this, follow the instructions below.
 * The best performance, when cloning :edge_opt:`EDGE's assets repository <>`, is obtained by using ``git lfs clone``. This will download all, possibly large, files stored in the Git LFS store.
 * If you are only interested in certain files or directories, you can, by using ``git lfs clone --exclude=*``, initialize the assets repository with non-LFS files and Git LFS pointers only.

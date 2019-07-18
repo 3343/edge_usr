@@ -85,15 +85,27 @@ The comment ``<!-- [...] -->`` indicates, that a node is allowed to appear multi
           <rho/>
           <lambda/>
           <mu/>
+          <!-- quality factors for viscoelastic builds only -->
+          <qp/>
+          <qs/>
         </domain>
         <!-- [...] -->
       </velocity_model>
 
       <setups>
+        <!-- attenuation config for viscoelastic builds only -->
+        <attenuation>
+          <central_frequency/>
+          <frequency_ratio/>
+        </attenuation>
+
         <point_sources>
           <file/>
           <!-- [...] -->
         </point_sources>
+
+        <initial_values/>
+        <!-- [...] -->
 
         <end_time/>
       </setups>
@@ -118,11 +130,14 @@ The comment ``<!-- [...] -->`` indicates, that a node is allowed to appear multi
           <type/>
           <file/>
           <int/>
+          <sparse_type/>
         </wave_field>
 
         <error_norms>
           <type/>
           <file/>
+          <reference_values/>
+          <!-- [...] -->
         </error_norms>
       </output>
     </cfr>
@@ -139,41 +154,52 @@ The node ``<edge>`` is the root of both, the runtime- and the build-configuratio
 The node ``<build>`` describes the build-configuration and is only used by SCons.
 EDGE also parses ``<build>`` at runtime, however the information is only logged and does not influence runtime behavior.
 
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-|    Attribute | Allowed Values                         | Description                                                                                                                                                                         |
-+==============+========================================+=====================================================================================================================================================================================+
-| cfr          | 1, 2, 4, 8, 12, 16                     | Number of concurrent/fused forward runs. 1, 4, 8, and 16 are typically used.                                                                                                        |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| equations    | advection, elastic, swe                | Equations solved. advection: advection equation, elastic: elastic wave equations, swe: shallow water equations.                                                                     |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| element_type | line, quad4r, tria3, hex8r, tet4       | Element type used for spatial discretization. line: line elements, quad4r: 4-node, rectangular quads, tria3: 3-node triangles, hex8r: 8-node, rectangular hexes, tet4: 4-node tets. |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| order        | 1, 2, 3, 4, 5, ..                      | Convergence rate of the solver. 1: Finite volume solver (P0 elements), 2-9: ADER-DG solver (P1-P8 elements).                                                                        |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| mode         | release, debug, release+san, debug+san | Compile mode. release: fastest option, debug: debug flags and disabled optimizations, debug/release+san (gnu and clang): same as debug/release, but with sanitizers.                |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| arch         | host, snb, hsw, knl, skx, knm, avx512  | Targeted architecture. host: uses the architecture of the machine compiling the code, snb: Sandy Bridge, hsw: Haswell, knl: Knights Landing, skx: Skylake, knm: Knights Mill        |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| precision    | 32, 64                                 | Floating point precision in bit. 32: single precision arithmetic (recommended), 64: double precision arithmetic.                                                                    |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| parallel     | none, omp, mpi, mpi+omp                | Shared and distributed memory parallelization. none: disabled, omp: OpenMP only, mpi: MPI only, mpi+omp: hybrid parallelization with MPI and OpenMP.                                |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cov          | yes, no                                | Support for code coverage reports.                                                                                                                                                  |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| tests        | yes, no                                | Unit tests. yes: builds unit tests in the separate binary `tests`.                                                                                                                  |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| build_dir    | /path/to/build_dir                     | Path to the build-directory. Temporary files and the final executable(s) are stored in the build-directory.                                                                         |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| xsmm         | yes, no, path/to/xsmm                  | LIBXSMM support. Available only for ADER-DG and elastics.                                                                                                                           |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| zlib         | yes, no, path/to/zlib                  | zlib support.                                                                                                                                                                       |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| hdf5         | yes, no, path/to/hdf5                  | hdf5 support.                                                                                                                                                                       |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| moab         | yes, no, path/to/moab                  | MOAB support. If MOAB is enabled, EDGE is build with support for unstructured meshes. If disabled, EDGE is build with support for regular meshes.                                   |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| inst         | yes, no                                | EDGE's high-level code instrumentation through the Score-P library.                                                                                                                 |
-+--------------+----------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+|  Attribute   |           Allowed Values           |                                       Description                                        |
++==============+====================================+==========================================================================================+
+| cfr          | 1, 2, 4, 8, 12, 16                 | Number of concurrent/fused forward runs. 1, 4, 8, and 16 are typically used.             |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| equations    | advection, elastic, viscoelastic3, | Equations solved. advection: advection equation, elastic: elastic wave equations,        |
+|              | viscoelastic4, viscoelastic5, swe  | viscoelastic3-5: elastic wave equations with frequency-independent quality factors       |
+|              |                                    | and 3, 4 or 5 relaxation mechanisms, swe: shallow water equations.                       |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| element_type | line, quad4r, tria3, hex8r, tet4   | Element type used for spatial discretization. line: line elements, quad4r: 4-node,       |
+|              |                                    | rectangular quads, tria3: 3-node triangles, hex8r: 8-node, rectangular hexes, tet4:      |
+|              |                                    | 4-node tets.                                                                             |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| order        | 1, 2, 3, 4, 5, ..                  | Convergence rate of the solver. 1: Finite volume solver (P0 elements),                   |
+|              |                                    | 2-9: ADER-DG solver (P1-P8 elements).                                                    |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| mode         | release, debug, release+san,       | Compile mode. release: fastest option, debug: debug flags and disabled optimizations,    |
+|              | debug+san                          | debug/release+san (gnu and clang): same as debug/release, but with sanitizers.           |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| arch         | host, snb, hsw, knl, skx, knm,     | Targeted architecture. host: uses the architecture of the machine compiling the code,    |
+|              | avx512                             | snb: Sandy Bridge, hsw: Haswell, knl: Knights Landing, skx: Skylake, knm: Knights Mill   |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| precision    | 32, 64                             | Floating point precision in bit. 32: single precision arithmetic (recommended), 64:      |
+|              |                                    | double precision arithmetic.                                                             |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| parallel     | none, omp, mpi, mpi+omp            | Shared and distributed memory parallelization. none: disabled, omp: OpenMP only, mpi:    |
+|              |                                    | MPI only, mpi+omp: hybrid parallelization with MPI and OpenMP.                           |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| cov          | yes, no                            | Support for code coverage reports.                                                       |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| tests        | yes, no                            | Unit tests. yes: builds unit tests in the separate binary `tests`.                       |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| build_dir    | /path/to/build_dir                 | Path to the build-directory. Temporary files and the final executable(s) are stored in   |
+|              |                                    | the build-directory.                                                                     |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| xsmm         | yes, no, path/to/xsmm              | LIBXSMM support. Available only for ADER-DG and elastics.                                |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| zlib         | yes, no, path/to/zlib              | zlib support.                                                                            |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| hdf5         | yes, no, path/to/hdf5              | hdf5 support.                                                                            |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| moab         | yes, no, path/to/moab              | MOAB support. If MOAB is enabled, EDGE is build with support for unstructured meshes. If |
+|              |                                    | disabled, EDGE is build with support for regular meshes.                                 |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
+| inst         | yes, no                            | EDGE's high-level code instrumentation through the Score-P library.                      |
++--------------+------------------------------------+------------------------------------------------------------------------------------------+
 
 <cfr>
 -----
@@ -236,7 +262,9 @@ Here, we define one or more domains for a velocity model, each of which allows f
 | domain     | ``<half_space/>``, ``<rho/>``, | ``<half_space>``: One or more half-spaces building the domain (see separate description)., |
 |            | ``<lambda/>``, ``<mu/>``       | ``<rho/>``: mass density :math:`\rho`,                                                     |
 |            |                                | ``<lambda/>``: Lame parameter :math:`\lambda`,                                             |
-|            |                                | ``<mu/>``: Lame parameter :math:`\mu`                                                      |
+|            |                                | ``<mu/>``: Lame parameter :math:`\mu`,                                                     |
+|            |                                | ``<qp/>``: qualityfactor :math:`Q_P` (only for viscoelastic settings),                     |
+|            |                                | ``<qs/>``: qualityfactor :math:`Q_S` (only for viscoelastic settings),                     |
 +------------+--------------------------------+--------------------------------------------------------------------------------------------+
 
 <domain>
@@ -281,13 +309,20 @@ All other points are outside.
 The node `<setups>` describes the setups of the fused simulations.
 A setup is given by initial values or source terms, and the shared end time of all fused simulations.
 
-+---------------+-----------------+---------------------------------------------------------------------------------------------------+
-| Node          | Attributes      | Description                                                                                       |
-+===============+=================+===================================================================================================+
-| point_sources | ``<file/>``     | One or more HDF5-files, each containing a point source description for a single fused simulation. |
-+---------------+-----------------+---------------------------------------------------------------------------------------------------+
-| end_time      |                 | End time of the fused simulations.                                                                |
-+---------------+-----------------+---------------------------------------------------------------------------------------------------+
++----------------+--------------------------+----------------------------------------------------------------------------------------------------+
+|      Node      |        Attributes        |                                            Description                                             |
++================+==========================+====================================================================================================+
+| attenuation    | ``<central_frequency/>`` | Central frequency and frequency ratio of the attenuation frequency band.                           |
+|                | ``<frequency_ratio/>``   |                                                                                                    |
++----------------+--------------------------+----------------------------------------------------------------------------------------------------+
+| point_sources  | ``<file/>``              | One or more HDF5-files, each containing a point source description for a single fused simulation.  |
++----------------+--------------------------+----------------------------------------------------------------------------------------------------+
+| end_time       |                          | End time of the fused simulations.                                                                 |
++----------------+--------------------------+----------------------------------------------------------------------------------------------------+
+| initial_values |                          | Initial values of the degrees of freedom (just-in-time generated code). Example are available from |
+|                |                          | EDGE's :edge_opt:`assets repository <>`.                                                           |
+|                |                          | This is an optional parameter, default behavior sets all DOFs to zero.                             |
++----------------+--------------------------+----------------------------------------------------------------------------------------------------+
 
 <output>
 --------
@@ -305,3 +340,21 @@ The different types can be activated separately:
   The errors are computed at the end of simulation by comparing the obtained result to the analytical reference solution through quadrature rules.
   Here, we use oversample the error computation by using a quadrature rule one order above the DG-solution.
   As usual, errors for all quantities and all fused simulations are written.
+
+<wave_field>
+------------
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+|  Attribute  |    Allowed Values     |                                          Description                                          |
++=============+=======================+===============================================================================================+
+| type        | vtk_ascii, vtk_binary | ASCII or binary (recommended) VTK output.                                                     |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| file        |                       | Path to the output files. Each rank writes in its own directory. For example:                 |
+|             |                       | ``loh3_uns_200/wf`` will write the output of the third synchronization point to               |
+|             |                       | ``loh3_uns_200/0/wf_0_3.vtk`` for the first MPI-rank and to                                   |
+|             |                       | ``loh3_uns_200/1/wf_1_3.vtk`` for the second MPI-rank.                                        |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| int         |                       | Interval of the wave field. For example `0.75`, will write the output at 0, 0.75, 1.5, [...]. |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| sparse_type |                       | Sparse type of the elements, which are written. For example, for seismic workloads, 101 would |
+|             |                       | only write elements at the free-surface. All elements are written, if not set.                |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+

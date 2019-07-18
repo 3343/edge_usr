@@ -8,7 +8,7 @@ Currently, these are the following benchmarks:
 +===============+======================================================================================================+
 | conv          | 2D/3D convergence benchmarks, periodic boundary conditions.                                          |
 +---------------+------------------------------------------------------------------------------------------------------+
-| garvin        | Solves Garvin's problem (2D), acoustic/elastic, explosive point source.                              |
+| garvin        | Garvin's problem (2D), acoustic/elastic, explosive point source.                                     |
 +---------------+------------------------------------------------------------------------------------------------------+
 | ghill_2d      | 2D Gaussian hill topography, acoustic/elastic, explosive point source.                               |
 +---------------+------------------------------------------------------------------------------------------------------+
@@ -18,11 +18,15 @@ Currently, these are the following benchmarks:
 +---------------+------------------------------------------------------------------------------------------------------+
 | hsp1a         | Homogeneous space, elastic, near receivers, single point source.                                     |
 +---------------+------------------------------------------------------------------------------------------------------+
+| hsp2a         | Homogeneous space, viscoelastic, near receivers, single point source.                                |
++---------------+------------------------------------------------------------------------------------------------------+
 | hhs1          | Homogeneous halfspace, elastic, single point source.                                                 |
 +---------------+------------------------------------------------------------------------------------------------------+
 | loh1          | Layer over homogeneous halfspace, elastic, single point source.                                      |
 +---------------+------------------------------------------------------------------------------------------------------+
 | loh2          | Layer over homogeneous halfspace, elastic, kinematic rupture.                                        |
++---------------+------------------------------------------------------------------------------------------------------+
+| loh3          | Layer over homogeneous halfspace, viscoelastic, single point source.                                 |
 +---------------+------------------------------------------------------------------------------------------------------+
 | can4          | Three thin layers in a halfspace, reaching the surface at a low angle, elastic, single point source. |
 +---------------+------------------------------------------------------------------------------------------------------+
@@ -30,7 +34,7 @@ Currently, these are the following benchmarks:
 +---------------+------------------------------------------------------------------------------------------------------+
 | ssef0         | Layered velocity model, elastic, kinematic rupture with variable parameters.                         |
 +---------------+------------------------------------------------------------------------------------------------------+
-| ghill         | 2D Gaussian hill topography, elastic, double couple source.                                          |
+| ghill         | 3D Gaussian hill topography, elastic, double couple source.                                          |
 +---------------+------------------------------------------------------------------------------------------------------+
 | sgt           | 3D mountain topography, homogeneous, elastic, point forces for reciprocal solution.                  |
 +---------------+------------------------------------------------------------------------------------------------------+

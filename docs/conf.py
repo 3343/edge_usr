@@ -48,11 +48,11 @@ extensions = [
 extlinks = {
   'edge_git':     ( 'https://github.com/3343/edge/%s',                       None ),
   'edge_usr_git': ( 'https://github.com/3343/edge_usr/%s',                   None ),
-  'edge_usr_pub': ( 'http://usr.dial3343.org/%s',                            None ),
+  'edge_usr_pub': ( 'https://usr.dial3343.org/%s',                           None ),
   'edge_dev_git': ( 'https://github.com/3343/edge_dev/%s',                   None ),
   'edge_dev_pub': ( 'http://dev.dial3343.org/%s',                            None ),
   'edge_opt':     ( 'https://opt.dial3343.org/3343/edge_opt/tree/master/%s', None ),
-  'dial3343':     ( 'http://dial3343.org/%s',                                None )
+  'dial3343':     ( 'https://dial3343.org/%s',                               None )
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -99,7 +99,8 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
+html_static_path = ['_static']
+html_css_files = { 'table_fix.css' }
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
