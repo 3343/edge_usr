@@ -115,7 +115,7 @@ To install EDGE-V do the following:
 
   .. code-block:: bash
 
-    scons parallel=omp zlib=../../deps hdf5=../../deps moab=../../deps install_dir=../../deps
+    scons parallel=omp zlib=../../deps hdf5=../../deps moab=../../deps metis=../../deps install_dir=../../deps
 
 EDGE
 ----
