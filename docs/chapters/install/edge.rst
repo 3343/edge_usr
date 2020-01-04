@@ -1,7 +1,7 @@
 Installation
 ============
 This chapter describes the manual installation of EDGE and its dependencies from scratch.
-If you are looking for an automated installation, consider skipping to sub-section `Singularity Bootstrap`_ or EDGE's support for cloud infrastructure in Sec. :doc:`../setup/cloud`.
+If you are looking for an automated installation, consider skipping to EDGE's support for cloud infrastructure in Sec. :doc:`../setup/cloud`
 
 Examples
 --------
@@ -10,17 +10,6 @@ If you get stuck with this user guide, you might be able to find additional inst
 
 * :edge_git:`Travis CI <blob/master/.travis.yml>`
 * :edge_git:`GoCD <blob/master/tools/gocd/cruise-config.tmpl>`
-* :edge_git:`Singularity <blob/master/tools/build/singularity/edge.def>`
-
-General Remarks
----------------
-EDGE links almost all libraries statically and expects corresponding library installations.
-The descriptions below are adjusted accordingly and only building static versions is described.
-This is one of the reasons why manual library installations are recommended, for example, not using ``sudo apt-get install`` on your local machine.
-``libnuma`` and compiler-provided libraries, e.g., OpenMP, are the only exception.
-
-All of the instructions below assume that you initiate the installation of each library in EDGE's root-directory and will put the installed library into the directory ``libs``.
-Make sure to navigate back to the root-directory before installing the next library.
 
 Getting the Code
 ----------------
@@ -35,7 +24,7 @@ We recommend to use the most recent tag to get started with EDGE.
 Changes in ``develop`` are intended to be merged into master.
 However, ``develop`` is for ongoing development and broken from time to time.
 
-The procedure for obtaining the code as follows:
+The procedure for obtaining the code is as follows:
 
 1. Clone the git-repository and navigate to the root-directory through:
 
@@ -68,108 +57,65 @@ LIBXSMM
 -------
 The single core backend of EDGE's high-performance kernels is provided through the library `LIBXSMM <https://github.com/hfp/libxsmm>`_.
 LIBXSMM is optional, but highly recommended due to severe performance-limitations of the vanilla kernels.
-
-* Install libxsmm by running:
+Install LIBXSMM by running:
 
   .. code-block:: bash
 
-    cd submodules/libxsmm; PREFIX=../../libs make FORTRAN=0 BLAS=0 install
+    ./tools/build/deps/libxsmm.sh -i $(pwd)/submodules/libxsmm -o $(pwd)/deps
 
 zlib
 ----
-zlib is a requirement for the HDF5 library.
+`zlib <http://zlib.net>`_ is a requirement for the HDF5 library.
+Install zlib by running:
 
-1. Download zlib from http://zlib.net/ (tar.gz):
+  .. code-block:: bash
 
-   .. code-block:: bash
-
-     wget http://zlib.net/zlib-1.2.11.tar.gz -O zlib.tar.gz
-
-2. Extract zlib to the directory ``zlib``:
-
-   .. code-block:: bash
-
-     mkdir zlib; tar -xzf zlib.tar.gz -C zlib --strip-components=1
-
-3. Configure the installation and set ``libs`` as installation directory by running:
-
-   .. code-block:: bash
-
-     cd zlib; ./configure --static --prefix=$(pwd)/../libs
-
-4. Run ``make`` to build the library and ``make install`` to put it in the ``libs`` directory.
+    ./tools/build/deps/zlib.sh -o $(pwd)/deps
 
 HDF5
 ----
-HDF5 is a requirement for point source descriptions.
-Futher, we recommend building MOAB, EDGE's interface to unstructured meshes, with HDF5-support.
-MOAB's native mesh format uses HDF5, which allows fast parsing of large meshes in parallel simulations.
+`HDF5 <https://portal.hdfgroup.org/display/HDF5/HDF5>`_ is a requirement for point source descriptions and EDGE's mesh interface.
+Install HDF5 by running:
 
-1. Download HDF5 from https://www.hdfgroup.org/downloads/hdf5/source-code/ (gzip):
+  .. code-block:: bash
 
-   .. code-block:: bash
-
-     wget https://www.hdfgroup.org/package/gzip/?wpdmdl=13048 -O hdf5.tar.gz
-
-2. Extract HDF5 to the directory ``hdf5``:
-
-   .. code-block:: bash
-
-     mkdir hdf5; tar -xzf hdf5.tar.gz -C hdf5 --strip-components=1
-
-3. Configure the installation and set ``libs`` as installation directory.
-
-   * Sequential:
-
-     .. code-block:: bash
-
-       cd hdf5; ./configure --enable-shared=no --with-zlib=$(pwd)/../libs --prefix=$(pwd)/../libs
-
-   * Parallel:
-
-     .. code-block:: bash
-
-       cd hdf5; ./configure --enable-shared=no --enable-parallel --with-zlib=$(pwd)/../libs --prefix=$(pwd)/../libs
-
-   Make sure to check that the configuration, printed at the very end, matches your expectations.
-
-4. Finally run ``make`` to build the library and ``make install`` to put it in the ``libs`` directory.
+    ./tools/build/deps/hdf5.sh -z $(pwd)/deps -o $(pwd)/deps
 
 MOAB
 ----
-If using unstructured meshes in EDGE, you need to provide an installation of `MOAB <http://sigma.mcs.anl.gov/moab-library/>`_.
-Since ASCII-only builds of MOAB are troublesome, building with HDF5-support also for small-scale runs is recommended.
+EDGE's mesh interface EDGE-V (see below) uses the library `MOAB <http://sigma.mcs.anl.gov/moab-library/>`_.
+Install MOAB by running:
 
-1. Generate the configure-script:
+  .. code-block:: bash
 
-   .. code-block:: bash
+    ./tools/build/deps/moab.sh -z $(pwd)/deps -5 $(pwd)/deps -e $(pwd)/submodules/eigen -i $(pwd)/submodules/moab -o $(pwd)/deps
 
-     cd submodules/moab; autoreconf -fi
+EDGE-V
+------
+At runtime EDGE-V interfaces the mesh and respective annotations as a library.
+Further details on preprocessing use-cases, e.g., the derivation of local time stepping schemes or mesh partitioning, are given in Sec. :doc:`../tools/edge_v`.
+To install EDGE-V do the following:
 
-2. Configure the installation, two examples:
+1. Navigate to EDGE-V's source directory:
 
-   * Sequential example using GNU compilers:
+  .. code-block:: bash
 
-     .. code-block:: bash
+    cd tools/edge_v
 
-      CXXFLAGS="-DEIGEN_DONT_VECTORIZE -fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=gcc CXX=g++ ./configure --disable-debug --disable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs --with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --prefix=$(pwd)/../../libs
+2. Run the build script:
 
-   * MPI-parallel example using Intel compilers:
+  .. code-block:: bash
 
-     .. code-block:: bash
-
-      CXXFLAGS="-DEIGEN_DONT_VECTORIZE -fPIC" LIBS="$(pwd)/../../libs/lib/libz.a" CC=mpiicc CXX=mpiicpc ./configure --disable-debug --disable-optimize --enable-shared=no --enable-static=yes --with-pic=yes --disable-fortran --enable-tools --disable-blaslapack --with-eigen3=$(pwd)/../eigen --with-zlib=$(pwd)/../../libs --with-hdf5=$(pwd)/../../libs --with-netcdf=no --with-pnetcdf=no --with-metis=yes --download-metis --with-mpi --prefix=$(pwd)/../../libs
-
-3. Now you can build MOAB with ``make`` and install it through ``make install``.
+    scons parallel=omp zlib=../../deps hdf5=../../deps moab=../../deps install_dir=../../deps
 
 EDGE
 ----
-EDGE uses `SCons <http://scons.org/>`_ as build tool.
+EDGE (and EDGE-V) use `SCons <http://scons.org/>`_ as build tool.
 ``scons --help`` returns all of EDGE's build-options.
 All build options are given in the respective :ref:`sub-section <sec-setup-config-build>` of Sec. :doc:`../setup/config`.
 You can enable the libraries in EDGE either by passing their installation directory explicitly (recommended) or by setting the environment variables ``CPLUS_INCLUDE_PATH`` and ``LIBRARY_PATH``.
-For example, let's assume that you installed LIBXSMM in the directory ``$(pwd)/libs``.
-Than we could either enable LIBXSMM by passing ``xsmm=$(pwd)/libs`` to EDGE's SCons-script or by using ``CPLUS_INCLUDE_PATH=$(pwd)/libs/include LIBRARY_PATH=$(pwd)/libs/lib scons [...] xsmm=yes``.
+For example, let's assume that you installed LIBXSMM in the directory ``$(pwd)/deps``.
+Than we could either enable LIBXSMM by passing ``xsmm=$(pwd)/deps`` to EDGE's SCons-script or by using ``CPLUS_INCLUDE_PATH=$(pwd)/deps/include LIBRARY_PATH=$(pwd)/deps/lib scons [...] xsmm=yes``.
 
 If something goes wrong with finding a library, EDGE will tell you so.
 For example, if we did not install LIBXSMM in ``/tmp``, but tell EDGE so anyways, we get:
@@ -194,60 +140,3 @@ Further information on what went wrong is logged in the file ``config.log``, whi
     .sconf_temp/conftest_2.cpp:1:21: fatal error: libxsmm.h: No such file or directory
     compilation terminated.
     scons: Configure: no
-
-Stack Size
-----------
-In certain settings EDGE allocates substantial amounts of data on the stack.
-For high-order configurations, this memory is mostly occupied by thread-private global matrix structures.
-To circumvent errors due to limited stacks on Linux systems use ``ulimit``. ``ulimit -s`` shows you the current maximum, ``ulimit -s unlimited`` allows unlimited sized stacks.
-Server machines typically operate unlimited.
-If running CentOS, you can obtain an unlimited stack as default by adding the following line to ``/etc/security/limits.conf``:
-
-::
-
-    *                -       stack            unlimited
-
-*Be aware*, that ``unlimited`` might interfere with your system's Out Of Memory (OOM) Killer.
-
-Singularity Bootstrap
----------------------
-`Singularity <http://singularity.lbl.gov/>`_ is software, which allows container-based execution of HPC-codes at close-to-native performance.
-EDGE provides a Debian-bootstrap for automated installation of different configurations:
-
-+--------------+------------------------------------------------+
-| Build Option | Enabled Bootstrap Cofingurations               |
-+==============+================================================+
-| element_type | tet4 (4-node tetrahedral elements)             |
-+--------------+------------------------------------------------+
-| equations    | elastic (elastic wave equations)               |
-+--------------+------------------------------------------------+
-| order        | 1 (FV), 2-5 (ADER-DG)                          |
-+--------------+------------------------------------------------+
-| cfr          | 1 (hsw, non-fused), 16 (knl, fused)            |
-+--------------+------------------------------------------------+
-| arch         | hsw (Haswell), AVX512 (knl, skl, kml)          |
-+--------------+------------------------------------------------+
-| xsmm         | yes (LIBXSMM enabled except for FV)            |
-+--------------+------------------------------------------------+
-| zlib         | yes                                            |
-+--------------+------------------------------------------------+
-| hdf5         | yes (enables kinematic sources)                |
-+--------------+------------------------------------------------+
-| moab         | yes (unstructured meshes), no (regular meshes) |
-+--------------+------------------------------------------------+
-| parallel     | omp (shared memory parallelization)            |
-+--------------+------------------------------------------------+
-
-Once a container is generated, you can run it on systems with Singularity installed, without installing any further dependencies.
-Example systems with Singularity support are the XSEDE-resources `Stampede <https://github.com/TACC/TACC-Singularity>`_ and `Comet <https://github.com/zonca/singularity-comet>`_.
-If you have root-access to a system with Singularity and `debootstrap <https://wiki.debian.org/Debootstrap>`_ installed, you can generate a container containing EDGE and all its dependencies.
-
-1. Adjust the EDGE-version in the bootstrap, if required (defaults to ``develop``)
-
-2. Run the bootstrap to install the dependencies and EDGE-configurations:
-
-   .. code-block:: bash
-
-     sudo singularity build /tmp/edge.simg ./edge.def
-
-3. The bootstrap might run for several hours, maybe grab a coffee.
