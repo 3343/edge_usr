@@ -90,6 +90,15 @@ Install MOAB by running:
 
     ./tools/build/deps/moab.sh -z $(pwd)/deps -5 $(pwd)/deps -e $(pwd)/submodules/eigen -i $(pwd)/submodules/moab -o $(pwd)/deps
 
+METIS
+----
+`METIS <http://glaros.dtc.umn.edu/gkhome/metis/metis/overview>`_ is used for partitioning in EDGE-V.
+Install METIS by running:
+
+  .. code-block:: bash
+
+    ./tools/build/deps/metis.sh -o $(pwd)/deps
+
 EDGE-V
 ------
 At runtime EDGE-V interfaces the mesh and respective annotations as a library.
