@@ -7,15 +7,14 @@ Examples
 EDGE's entire installation process is continuously tested.
 If you get stuck with this user guide, you might be able to find additional installation hints in the respective configurations:
 
-* :edge_git:`Travis CI <blob/master/.travis.yml>`
-* :edge_git:`GoCD <blob/master/tools/gocd/cruise-config.tmpl>`
+* :edge_git:`GitHub Actions <blob/master/.github/workflows/>`
+* :edge_git:`Buildkite <blob/master/tests>`
 
 Getting the Code
 ----------------
 EDGE's sources are hosted at :edge_git:`GitHub <>`.
 The repository has two branches :edge_git:`master <tree/master>` and :edge_git:`develop <tree/develop>`.
 ``master`` is the most recent stable version of EDGE.
-The minmimum acceptance requirement for ``master`` is passing EDGE's :edge_dev_pub:`continuous delivery pipeline </chapters/cont/cont.html>`.
 Periodically EDGE also provides tags, which are simply snapshots of the master branch.
 Typically tags passed additional, manual testing.
 We recommend to use the most recent tag to get started with EDGE.
@@ -52,57 +51,24 @@ The procedure for obtaining the code is as follows:
      git submodule init
      git submodule update
 
-LIBXSMM
--------
-The single core backend of EDGE's high-performance kernels is provided through the library `LIBXSMM <https://github.com/hfp/libxsmm>`_.
-LIBXSMM is optional, but highly recommended due to severe performance-limitations of the vanilla kernels.
-Install LIBXSMM by running:
+External Dependencies
+---------------------
+EDGE relies on a collection of open-source software:
 
-  .. code-block:: bash
+*  `LIBXSMM <https://github.com/hfp/libxsmm>`_ is the single core backend of EDGE's high-performance kernels.
+   LIBXSMM is optional, but highly recommended due to severe performance-limitations of the vanilla kernels.
+* `zlib <http://zlib.net>`_ is a requirement for the HDF5 library.
+* `HDF5 <https://portal.hdfgroup.org/display/HDF5/HDF5>`_ is a requirement for point source descriptions and for EDGE-V, EDGE's mesh interface.
+* `Gmsh <https://gmsh.info>`_ is used to read and write meshes.
+* `METIS <http://glaros.dtc.umn.edu/gkhome/metis/metis/overview>`_ is used for partitioning in EDGE-V.
 
-    ./tools/build/deps/libxsmm.sh -i $(pwd)/submodules/libxsmm -o $(pwd)/deps
-
-zlib
-----
-`zlib <http://zlib.net>`_ is a requirement for the HDF5 library.
-Install zlib by running:
-
-  .. code-block:: bash
-
-    ./tools/build/deps/zlib.sh -o $(pwd)/deps
-
-HDF5
-----
-`HDF5 <https://portal.hdfgroup.org/display/HDF5/HDF5>`_ is a requirement for point source descriptions and EDGE's mesh interface.
-Install HDF5 by running:
-
-  .. code-block:: bash
-
-    ./tools/build/deps/hdf5.sh -z $(pwd)/deps -o $(pwd)/deps
-
-MOAB
-----
-EDGE's mesh interface EDGE-V (see below) uses the library `MOAB <http://sigma.mcs.anl.gov/moab-library/>`_.
-Install MOAB by running:
-
-  .. code-block:: bash
-
-    ./tools/build/deps/moab.sh -z $(pwd)/deps -5 $(pwd)/deps -e $(pwd)/submodules/eigen -i $(pwd)/submodules/moab -o $(pwd)/deps
-
-METIS
-----
-`METIS <http://glaros.dtc.umn.edu/gkhome/metis/metis/overview>`_ is used for partitioning in EDGE-V.
-Install METIS by running:
-
-  .. code-block:: bash
-
-    ./tools/build/deps/metis.sh -o $(pwd)/deps
+Scripts which install the external dependencies are available in the :edge_git:`tools/build/deps <blob/master/tools/build/deps/>`-directory.
 
 EDGE-V
 ------
 At runtime EDGE-V interfaces the mesh and respective annotations as a library.
 Further details on preprocessing use-cases, e.g., the derivation of local time stepping schemes or mesh partitioning, are given in Sec. :doc:`../tools/edge_v`.
-To install EDGE-V do the following:
+Assuming that all external dependencies are installed in ``./deps`` do the following to install EDGE-V:
 
 1. Navigate to EDGE-V's source directory:
 
@@ -114,7 +80,7 @@ To install EDGE-V do the following:
 
   .. code-block:: bash
 
-    scons parallel=omp zlib=../../deps hdf5=../../deps moab=../../deps metis=../../deps install_dir=../../deps
+    scons parallel=omp zlib=../../deps hdf5=../../deps gmsh=../../deps metis=../../deps install_dir=../../deps
 
 EDGE
 ----
