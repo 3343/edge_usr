@@ -2,11 +2,6 @@ sudo: required
 
 language: python
 
-notifications:
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/43c875b57e67fd07bc8b
-
 install:
   # install tools
   - pip install sphinx
