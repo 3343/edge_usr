@@ -6,7 +6,6 @@
   self
 
   chapters/install/edge.rst
-  chapters/setup/cloud.rst
   chapters/install/assets.rst
 
   chapters/setup/config.rst

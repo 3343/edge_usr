@@ -1,7 +1,6 @@
 Installation
 ============
 This chapter describes the manual installation of EDGE and its dependencies from scratch.
-If you are looking for an automated installation, consider skipping to EDGE's support for cloud infrastructure in Sec. :doc:`../setup/cloud`
 
 Examples
 --------
