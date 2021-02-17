@@ -92,7 +92,7 @@ The second source has the three values :math:`0, 0.3, 0.2` and does not scale th
 
 NRF (deprecated)
 ----------------
-Previous versions of EDGE implemented an `intermediate netCDF format <https://github.com/SeisSol/SeisSol/wiki/Standard-Rupture-Format>`_ (NRF) of the `Standard Rupture Format <http://scec.usc.edu/scecpedia/Standard_Rupture_Format>`_ (SRF) for kinematic sources.
+Previous versions of EDGE implemented an `intermediate netCDF format <https://github.com/SeisSol/SeisSol/wiki/Standard-Rupture-Format>`_ (NRF) of the `Standard Rupture Format <https://strike.scec.org/scecpedia/Standard_Rupture_Format>`_ (SRF) for kinematic sources.
 This implementation performs the moment tensor computation, based on rupture parameters, in the setup of the solver.
 For higher flexibility, in particular the support of point forces at the surface, this procedure has been replaced by the format above.
 If using SRF-input and a (deprecated) NRF-enabled EDGE-version, the ASCII-SRF has to converted to an intermediate binary netCDF-format.
