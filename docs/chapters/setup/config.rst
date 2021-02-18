@@ -30,39 +30,20 @@ The comment ``<!-- [...] -->`` indicates, that a node is allowed to appear multi
       <xsmm/>
       <zlib/>
       <hdf5/>
-      <moab/>
+      <gmsh/>
       <inst/>
     </build>
 
     <cfr>
       <mesh>
-        <!-- regular meshes only -->
-        <n_elements>
-          <x/>
-          <y/>
-          <z/>
-        </n_elements>
-        <size>
-          <x/>
-          <y/>
-          <z/>
-        </size>
-
-        <!-- unstructured meshes only -->
-        <files>
-          <in/>
-          <out/>
-        </files>
-        <options>
-          <read/>
-        </options>
-
-        <!-- regular and unstructured meshes -->
-        <!-- boundary tags currently ignored -->
+        <in>
+          <base/>
+          <extension/>
+        </in>
         <boundary>
           <free_surface/>
           <outflow/>
-          <rupture/>
+          <periodic/>
         </boundary>
       </mesh>
 
@@ -174,7 +155,8 @@ EDGE also parses ``<build>`` at runtime, however the information is only logged 
 |              | debug+san                          | debug/release+san (gnu and clang): same as debug/release, but with sanitizers.           |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
 | arch         | host, snb, hsw, knl, skx, knm,     | Targeted architecture. host: uses the architecture of the machine compiling the code,    |
-|              | avx512                             | snb: Sandy Bridge, hsw: Haswell, knl: Knights Landing, skx: Skylake, knm: Knights Mill   |
+|              | avx512, aarch64                    | snb: Sandy Bridge, hsw: Haswell, knl: Knights Landing, skx: Skylake, knm: Knights Mill,  |
+|              |                                    | aarch64: Arm Neoverse N1                                                                 |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
 | precision    | 32, 64                             | Floating point precision in bit. 32: single precision arithmetic (recommended), 64:      |
 |              |                                    | double precision arithmetic.                                                             |
@@ -189,14 +171,13 @@ EDGE also parses ``<build>`` at runtime, however the information is only logged 
 | build_dir    | /path/to/build_dir                 | Path to the build-directory. Temporary files and the final executable(s) are stored in   |
 |              |                                    | the build-directory.                                                                     |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
-| xsmm         | yes, no, path/to/xsmm              | LIBXSMM support. Available only for ADER-DG and elastics.                                |
+| xsmm         | yes, no, path/to/xsmm              | LIBXSMM support. Available only for ADER-DG and seismic settings.                        |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
-| zlib         | yes, no, path/to/zlib              | zlib support.                                                                            |
+| zlib         | yes, path/to/zlib                  | zlib support.                                                                            |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
-| hdf5         | yes, no, path/to/hdf5              | hdf5 support.                                                                            |
+| hdf5         | yes, path/to/hdf5                  | hdf5 support.                                                                            |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
-| moab         | yes, no, path/to/moab              | MOAB support. If MOAB is enabled, EDGE is build with support for unstructured meshes. If |
-|              |                                    | disabled, EDGE is build with support for regular meshes.                                 |
+| gmsh         | yes, path/to/gmsh                  | Gmsh support.                                                                            |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
 | inst         | yes, no                            | EDGE's high-level code instrumentation through the Score-P library.                      |
 +--------------+------------------------------------+------------------------------------------------------------------------------------------+
@@ -211,46 +192,39 @@ An example of a shared configuration is the child ``<mesh>``.
 <mesh>
 ------
 ``<mesh>`` describes the used mesh of all, possibly fused, simulations.
-Two configurations are possible: 1) Regular meshes, and 2) unstructured meshes.
-
-In the case of a **regular mesh**, the configuration is given by the number of elements in every coordinate-direction and the correspoding size of the computational domain.
-Regular meshes originate at :math:`(0,0,0)`.
-The remaining corners are given by the size of the domain.
-
-+------------+------------------------------+-----------------------------------------------------------------------+
-| Node       | Attributes                   | Description                                                           |
-+============+==============================+=======================================================================+
-| n_elements | ``<x/>``, ``<y/>``, ``<z/>`` | Number of elements in the three coordinate directions.                |
-|            |                              | For two-dimensional setups ``<z/>`` is ignored.                       |
-|            |                              | For one dimensional setups, both, ``<z/>`` and ``<y/>``, are ignored. |
-+------------+------------------------------+-----------------------------------------------------------------------+
-| size       | ``<x/>``, ``<y/>``, ``<z/>`` | Size of the computational domain in the three coordinate directions.  |
-|            |                              | For two-dimensional setups ``<z/>`` is ignored.                       |
-|            |                              | For one dimensional setups, both, ``<z/>`` and ``<y/>``, are ignored. |
-+------------+------------------------------+-----------------------------------------------------------------------+
-
-**Unstructured meshes** are read from disk (or an equivalent storage).
 
 +------------+-----------------------+-------------------------------------------------------------------------------------------------------------------------------+
 | Node       | Attributes            | Description                                                                                                                   |
 +============+=======================+===============================================================================================================================+
-| files      | ``<in/>``, ``<out/>`` | ``<in/>``: path to the input-mesh, ``<out/>``: path to the output-mesh as parsed by EDGE (optional, typically for debugging). |
-|            |                       | All mesh formats supported by MOAB are allowed.                                                                               |
+| in         | ``<base/>``,          | ``<base/>``: base-path to the input-mesh. This excludes the partition-id.                                                     |
+|            | ``<extension/>``      | ``<extension/>``: file-extension of the mesh files.                                                                           |
 +------------+-----------------------+-------------------------------------------------------------------------------------------------------------------------------+
-| options    | ``<read/>``           | ``<read/>``: options forwarded to MOAB for mesh-input.                                                                        |
-|            |                       | Non-empty default is the empty string "".                                                                                     |
-|            |                       | MPI default is "PARALLEL=BCAST_DELETE; PARALLEL_RESOLVE_SHARED_ENTS; PARTITION=PARALLEL_PARTITION;".                          |
+| boundary   | ``<free_surface/>``,  | ``<free_surface/>``: id of free-surface boundary conditions (typically 101),                                                  |
+|            | ``<outflow/>``,       | ``<free_surface/>``: id of outflow boundary conditions (typically 105),                                                       |
+|            | ``<periodic/>``       | ``<periodic/>``: id of periodic boundary conditions (typically 106)                                                           |
 +------------+-----------------------+-------------------------------------------------------------------------------------------------------------------------------+
 
-The setup of boundary conditions is shared among regular and unstructured meshes.
-However, the runtime parameters are ignored for the time being, but will allow for user-defined tags in future.
-For the time being: Use tag 101 for free surface boundaries, 105 for outflow boundaries and 201 for internal dynamic rupture boundaries in your meshes.
+*Example*:
+Assume our mesh has two partitions stored at ``my_path/mesh_1.msh`` and ``my_path/mesh_2.msh`` and corresponding mesh-annotations at ``my_path/mesh_1.h5`` and ``my_path/mesh_2.h5``.
+Further, we'd like to assign faces with id 101 as free-surface boundaries and those with id 105 as outflow boundaries, then we would use:
 
+.. code-block:: XML
+
+  <mesh>
+    <in>
+      <base>my_path/mesh</base>
+      <extension>.msh</extension>
+    </in>
+    <boundary>
+        <free_surface>101</free_surface>
+        <outflow>106</outflow>
+    </boundary>
+  </mesh>
 
 <velocity_model>
 ----------------
 The node ``<velocity_model>`` describes the used velocity model, currently limited to the three elastic material parameters, given by the mass density :math:`\rho` and the two Lame parameters :math:`\mu` and :math:`\lambda`.
-Alternatively, the velocity model can be defined as part of the mesh (see Sec. :doc:`../tools/edge_v`)
+Alternatively, the velocity model can be defined as part of the mesh's annotations (see Sec. :doc:`../tools/edge_v`)
 We utilize EDGE's generic domain approach for the velocity model.
 Here, we define one or more domains for a velocity model, each of which allows for a constant set of material parameters.
 
@@ -307,20 +281,20 @@ All other points are outside.
 The node `<setups>` describes the setups of the fused simulations.
 A setup is given by initial values or source terms, and the shared end time of all fused simulations.
 
-+----------------+--------------------------+----------------------------------------------------------------------------------------------------+
-|      Node      |        Attributes        |                                            Description                                             |
-+================+==========================+====================================================================================================+
-| attenuation    | ``<central_frequency/>`` | Central frequency and frequency ratio of the attenuation frequency band.                           |
-|                | ``<frequency_ratio/>``   |                                                                                                    |
-+----------------+--------------------------+----------------------------------------------------------------------------------------------------+
-| point_sources  | ``<file/>``              | One or more HDF5-files, each containing a point source description for a single fused simulation.  |
-+----------------+--------------------------+----------------------------------------------------------------------------------------------------+
-| end_time       |                          | End time of the fused simulations.                                                                 |
-+----------------+--------------------------+----------------------------------------------------------------------------------------------------+
-| initial_values |                          | Initial values of the degrees of freedom (just-in-time generated code). Example are available from |
-|                |                          | EDGE's :edge_opt:`assets repository <>`.                                                           |
-|                |                          | This is an optional parameter, default behavior sets all DOFs to zero.                             |
-+----------------+--------------------------+----------------------------------------------------------------------------------------------------+
++----------------+--------------------------+-----------------------------------------------------------------------------------------------------+
+|      Node      |        Attributes        |                                            Description                                              |
++================+==========================+=====================================================================================================+
+| attenuation    | ``<central_frequency/>`` | Central frequency and frequency ratio of the attenuation frequency band.                            |
+|                | ``<frequency_ratio/>``   |                                                                                                     |
++----------------+--------------------------+-----------------------------------------------------------------------------------------------------+
+| point_sources  | ``<file/>``              | One or more HDF5-files, each containing a point source description for a single fused simulation.   |
++----------------+--------------------------+-----------------------------------------------------------------------------------------------------+
+| end_time       |                          | End time of the fused simulations.                                                                  |
++----------------+--------------------------+-----------------------------------------------------------------------------------------------------+
+| initial_values |                          | Initial values of the degrees of freedom (just-in-time generated code). Examples are available from |
+|                |                          | EDGE's :edge_opt:`assets repository <>`.                                                            |
+|                |                          | This is an optional parameter, default behavior sets all DOFs to zero.                              |
++----------------+--------------------------+-----------------------------------------------------------------------------------------------------+
 
 <output>
 --------
@@ -336,7 +310,7 @@ The different types can be activated separately:
   To match output points between two time steps in time, an ADER time prediction is evaluated.
 * Convergence settings might write errors in the L1-, L2-, and :math:`\text{L}^\infty` norm.
   The errors are computed at the end of simulation by comparing the obtained result to the analytical reference solution through quadrature rules.
-  Here, we use oversample the error computation by using a quadrature rule one order above the DG-solution.
+  Here, we oversample the error computation by using a quadrature rule one order above the DG-solution.
   As usual, errors for all quantities and all fused simulations are written.
 
 <wave_field>
@@ -356,3 +330,43 @@ The different types can be activated separately:
 | sparse_type |                       | Sparse type of the elements, which are written. For example, for seismic workloads, 101 would |
 |             |                       | only write elements at the free-surface. All elements are written, if not set.                |
 +-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+
+<receivers>
+-----------
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+|  Attribute  |    Allowed Values     |                                          Description                                          |
++=============+=======================+===============================================================================================+
+| path_to_dir |                       | Path to the output directory of the receivers, will be created if it doesn't exist.           |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| freq        |                       | Sampling of the written data, e.g., using ``<freq>0.1</freq> would write output at 0.0, 0.1,  |
+|             |                       | 0.2, ...                                                                                      |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| receiver    |                       | One more more receivers for which data is written.                                            |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+
+<receiver>
+-----------
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+|  Attribute  |    Allowed Values     |                                          Description                                          |
++=============+=======================+===============================================================================================+
+| name        |                       | Name of the receiver.                                                                         |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| coords      | ``<x/>``, ``<y/>``,   | x-, y- and z-coordinates of the receiver.                                                     |
+|             | ``<z/>``              |                                                                                               |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| receiver    |                       | One more more receivers for which data is written.                                            |
++-------------+-----------------------+-----------------------------------------------------------------------------------------------+
+
+<error_norms>
+-----------
++------------------+-----------------------+-----------------------------------------------------------------------------------------------+
+|  Attribute       |    Allowed Values     |                                          Description                                          |
++==================+=======================+===============================================================================================+
+| type             | ``sout``, ``file``,   | Writes the error-norms either to standard-out, file or to both.                               |
+|                  | ``sout_file``         |                                                                                               |
++------------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| file             |                       | Path of the file to which the error-norms are written                                         |
++------------------+-----------------------+-----------------------------------------------------------------------------------------------+
+| reference_values |                       | Reference values (just-in-time generated code) after completion of the simulation. Examples   |
+|                  |                       | are available from EDGE's :edge_opt:`assets repository <>`.                                   |
++------------------+-----------------------+-----------------------------------------------------------------------------------------------+
