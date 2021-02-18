@@ -10,6 +10,9 @@ It includes the following key features:
 * Mesh reordering based on the partitioning and time step groups.
 * Splitting of the mesh into separate per-partition chunks and derivation of respective annotations, e.g., the communication structure, for use in EDGE.
 
+
+Configuration
+-------------
 Similar to the core-solver, EDGE-V is controlled by XML-configurations.
 This part of the documentation has to be written still.
 The :edge_opt:`La Habra mesh setups <bench/seismic/wp/la_habra/meshes/volume>` might serve as an example for seismic settings.
