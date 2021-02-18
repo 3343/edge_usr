@@ -12,10 +12,8 @@
   chapters/tools/edge_v.rst
   chapters/tools/edge_cut.rst
 
-  chapters/setup/seismic/resources.rst
   chapters/setup/seismic/sources.rst
-
-
   chapters/bench/seismic/wp.rst
+  chapters/setup/seismic/resources.rst
 
 .. include:: README.rst
