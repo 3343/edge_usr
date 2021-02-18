@@ -1,6 +1,6 @@
 Benchmarks
 ==========
-EDGE :edge_opt:`provides <>` input and output data for a series wave propagation benchmarks.
+EDGE :edge_opt:`provides <bench/seismic/wp>` input and output data for a series wave propagation benchmarks.
 Currently, these are the following benchmarks:
 
 +---------------+------------------------------------------------------------------------------------------------------+
@@ -38,6 +38,9 @@ Currently, these are the following benchmarks:
 +---------------+------------------------------------------------------------------------------------------------------+
 | sgt           | 3D mountain topography, homogeneous, elastic, point forces for reciprocal solution.                  |
 +---------------+------------------------------------------------------------------------------------------------------+
+| la_habra      | 2014 M5.1 La Habra, CA earthquake setting of SCEC's High Frequency project.                          |
++---------------+------------------------------------------------------------------------------------------------------+
+
 
 Input: Kinematic Sources
 ------------------------
@@ -103,7 +106,6 @@ By using identical meshes and convergence rates for both setup, we obtain almost
 Small differences, however, exist:
 
   1. The seismic waves, originating from the point sources in the second setup, propagate through different elements before reaching the considered receivers.
-     This effect is greater for unstructured meshes.
   2. The 40 point sources of the reference setup do not exist in the kinematic setup: The centers of the 40 fault patches are located on the boundaries of the second setup's patches.
   3. We only executed EDGE five times for the provided solution of the first setup, and thus fused eight simulations per run.
 
@@ -143,3 +145,35 @@ In x-direction (south-north) and z-direction (depth), our region of interest is 
    The highest resolution is used for the dipping parts of the layers (red), followed by decreasing resolution in the three layers (darker to lighter gray).
    Further, the point source (yellow star) is refined with a distance-dependent, linear gradient of decreasing refinement (blue sphere), reaching the coarsest resolution at the boundary of the sphere.
    The resolution in the region of interest (light gray) is chosen to match our desired frequency content, while the remainder (white) is coarse and acts as a sponge layer.
+
+La Habra
+--------
+2014 Mw5.1 a Habra, CA earthquake setting of SCEC's `High-F project <https://scec.usc.edu/scecpedia/HighF_La_Habra_Verification>`_.
+The verification benchmark uses frequency-independent Q, a planar free surface, kinematic sources, and the velocity model CVM-S4.26.M01.
+
+.. figure:: gfx/la_habra_overview.png
+
+  Study area of the Southern California Earthquake Center's High Frequency project simulating the 2014 M5.1 La Habra, California earthquake.
+  Shown are the "small domain" through the inner box and partially the "large domain" through the outer box.
+  Additionally the locations of the epicenter and three stations are given.
+
+.. figure:: gfx/la_habra_mesh.png
+
+  Visualization of a velocity-aware tetrahedral mesh for the small simulation region shown above.
+  The example shows a highly increased mesh resolution in the near- surface parts of the Los Angeles basin.
+  Some partitions in the North-West part of the computational domain are excluded.
+  The epicenter is located in the center of the computational domain.
+  The user also defined a cylindrical high-resolution region around the epicenter in addition to the velocity-derived target edge- lengths.
+
+.. figure:: gfx/la_habra_wf.png
+
+  Visualization of the seismic wave field for a simulation of the 2014 Mw 5.1 La Habra Earthquake.
+  Shown are the amplitudes of the horizontal particle velocities after seven seconds of simulated time.
+  In addition to the High-F verification efforts, this simulation included mountain topograhy.
+
+.. figure:: gfx/la_habra_stations.svg
+
+  Comparison of EDGE's South-North velocity component (red) to another solver of the High Frequency project (black).
+  Shown are synthetic seismograms for the three stations depicted in above.
+  The seismograms were low-pass filtered at 5Hz.
+  EDGE's respective ground motion simulation harnessed 1,536 nodes of the Frontera machine for a total of 48 hours to advance the used 2.1 billion tetrahedral element-mesh in time.
