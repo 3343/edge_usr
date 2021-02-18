@@ -9,7 +9,6 @@
   chapters/install/assets.rst
 
   chapters/setup/config.rst
-  chapters/setup/meshes.rst
   chapters/setup/seismic/resources.rst
   chapters/setup/seismic/sources.rst
 
