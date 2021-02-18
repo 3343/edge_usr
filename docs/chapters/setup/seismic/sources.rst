@@ -5,8 +5,8 @@ Each of the fused simulations has an independent HDF5-input file, which contains
 This collection is completely decoupled from EDGE's fused simulation approach.
 Thus, each of the fused simulations can have an arbitrary source description.
 
-If a point source is outside of the modeling domain, it will be adjusted to the closest point of the mesh boundary.
-For example, assume that we specify a point force at the peak of a mountain for a tetrahedral mesh.
+If a point source is outside of the modeling domain, it will be mapped to the closest point of the mesh boundary.
+For example, assume that we specify a point force at the peak of a mountain for a flat tetrahedral mesh.
 In our example, the peak is outside the mesh, meaning that the source would be mapped to the closest-by point of the respective surface triangle.
 
 HDF5 Input
@@ -14,26 +14,25 @@ HDF5 Input
 We use five arrays to discretize the point sources, where #pt is the number of point sources and #ts the number of samples of all time series.
 All time series are integrated numerically (linear interpolation) before they are applied to Degrees of Freedom in EDGE.
 
-+-----------------+--------+---------+---------+---------------------------------------------------------------+
-| Dataset         | Type   | 2D Size | 3D Size | Description                                                   |
-+=================+========+=========+=========+===============================================================+
-| points          | fp32   | #pt, 2  | #pt, 3  | Cartesian coordinates of the point sources.                   |
-+-----------------+--------+---------+---------+---------------------------------------------------------------+
-| scalings        | fp32   | #pt, 5  | #pt, 9  | Scalings of each time series for each elastic quantity.       |
-+-----------------+--------+---------+---------+---------------------------------------------------------------+
-| time_parameters | fp32   | #pt, 2  | #pt, 2  | 1st: Offset of each time series in time.                      |
-|                 |        |         |         | 2nd: Time step of each time series.                           |
-+-----------------+--------+---------+---------+---------------------------------------------------------------+
-| time_pointers   | uint64 | #pt+1   | #pt+1   | 0 to #ts-1: Pointers to the first entries                     |
-|                 |        |         |         | of the 1D time series array.                                  | 
-|                 |        |         |         | #ts: total number of time samples over all time series (#ts). |
-+-----------------+--------+---------+---------+---------------------------------------------------------------+
-| time_series     | fp32   | #ts     | #ts     | Samples of all time series.                                   |
-+-----------------+--------+---------+---------+---------------------------------------------------------------+
++-----------------+--------+----------+----------+---------------------------------------------------------------+
+| Dataset         | Type   | 2D Size  | 3D Size  | Description                                                   |
++=================+========+==========+==========+===============================================================+
+| points          | fp32   | (#pt, 2) | (#pt, 3) | Cartesian coordinates of the point sources.                   |
++-----------------+--------+----------+----------+---------------------------------------------------------------+
+| scalings        | fp32   | (#pt, 5) | (#pt, 9) | Scalings of each time series for each elastic quantity.       |
++-----------------+--------+----------+----------+---------------------------------------------------------------+
+| time_parameters | fp32   | (#pt, 2) | (#pt, 2) | 1st: Offset of each time series in time.                      |
+|                 |        |          |          | 2nd: Time step of each time series.                           |
++-----------------+--------+----------+----------+---------------------------------------------------------------+
+| time_pointers   | uint64 | #pt+1    | #pt+1    | 0 to #ts-1: Pointers to the first entries                     |
+|                 |        |          |          | of the 1D time series array.                                  | 
+|                 |        |          |          | #ts: total number of time samples over all time series (#ts). |
++-----------------+--------+----------+----------+---------------------------------------------------------------+
+| time_series     | fp32   | #ts      | #ts      | Samples of all time series.                                   |
++-----------------+--------+----------+----------+---------------------------------------------------------------+
 
-The file :edge_opt:`point_forces_2d_0.h5 <cont/unit_tests/elastic/sources/point_sources_2d_0.h5>` contains an exemplary source description.
+The file :edge_opt:`point_forces_2d_0.h5 <cont/seismic/point_sources/point_sources_2d_0.h5>` contains an exemplary source description.
 We obtain an ASCII-representation by using the tool `h5dump <https://support.hdfgroup.org/HDF5/doc/RM/Tools.html#Tools-Dump>`_:
-
 ::
 
   > h5dump point_sources_2d_0.h5
